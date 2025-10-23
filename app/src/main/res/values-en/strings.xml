@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Bookmarks Manager</string>
+    <string name="app_title">Bookmarks Manager</string>
+
+    <string name="label_titre">Title</string>
+    <string name="label_url">URL</string>
+    <string name="label_description">Description (optional)</string>
+
+    <string name="ajouter_signet">Add bookmark</string>
+    <string name="titre_liste">My saved bookmarks:</string>
+    <string name="btn_supprimer">Delete</string>
+
+    <string name="date_ajout">Added on %1$s</string>
+</resources>

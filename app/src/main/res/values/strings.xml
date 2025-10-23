@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Gestionnaire de signets</string>
+    <string name="app_title">Gestionnaire de signets</string>
+
+    <string name="label_titre">Titre</string>
+    <string name="label_url">URL</string>
+    <string name="label_description">Description (optionnelle)</string>
+
+    <string name="ajouter_signet">Ajouter le signet</string>
+    <string name="titre_liste">Mes signets enregistrés :</string>
+    <string name="btn_supprimer">Supprimer</string>
+
+    <string name="date_ajout">Ajouté le %1$s</string>
+</resources>
