@@ -1,99 +1,97 @@
-/*
- Inspiré de : Fiches 55.1 – LazyColumn ; 60.1 – Lien hypertexte ; 60.2 – Card ; 66.2 – Validation ; 68.1 – Modification
-*/
 package com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.ui.ecrans
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.R
 import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.data.entities.Signet
 import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.ui.SignetViewModel
+import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.ui.components.PageTitle
 import java.text.DateFormat
 import java.util.Date
 
+/**
+ * Écran listant l’ensemble des signets enregistrés.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EcranSignets(viewModel: SignetViewModel, navController: NavController) {
     val listeSignets by viewModel.listeSignets.collectAsState()
     var signetASupprimer by remember { mutableStateOf<Signet?>(null) }
 
-    var titre by remember { mutableStateOf("") }
-    var url by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.app_title)) }) }
+        topBar = {
+            TopAppBar(
+                title = {
+                    PageTitle(
+                        title = stringResource(R.string.signets_page_title),
+                        subtitle = stringResource(R.string.signets_page_subtitle)
+                    )
+                }
+            )
+        }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .padding(16.dp)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // --- Zone d'ajout rapide (inchangée)
-            OutlinedTextField(
-                value = titre,
-                onValueChange = { titre = it },
-                label = { Text(stringResource(R.string.label_titre)) },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                value = url,
-                onValueChange = { url = it },
-                label = { Text(stringResource(R.string.label_url)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text(stringResource(R.string.label_description)) },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    if (titre.isNotBlank() && url.isNotBlank()) {
-                        viewModel.ajouterSignet(titre, url, description)
-                        titre = ""; url = ""; description = ""
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
+        if (listeSignets.isEmpty()) {
+            ListeVide(modifier = Modifier.padding(paddingValues))
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(stringResource(R.string.ajouter_signet))
-            }
-            Spacer(Modifier.height(24.dp))
-
-            Text(stringResource(R.string.titre_liste), style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
-
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(listeSignets) { signet ->
+                items(listeSignets, key = { it.id }) { signet ->
                     CarteSignet(
                         signet = signet,
-                        onModifier = { navController.navigate("modifier/${signet.id}") },
+                        onModifier = {
+                            navController.navigate("modifier/${signet.id}")
+                        },
                         onSupprimer = { signetASupprimer = signet }
                     )
                 }
@@ -101,94 +99,161 @@ fun EcranSignets(viewModel: SignetViewModel, navController: NavController) {
         }
     }
 
-    // --- Boîte de confirmation avant suppression
     signetASupprimer?.let { signet ->
         AlertDialog(
             onDismissRequest = { signetASupprimer = null },
-            title = { Text("Confirmer la suppression") },
-            text = { Text("Voulez-vous vraiment supprimer « ${signet.titre} » ?") },
+            title = { Text(text = stringResource(R.string.signets_dialog_titre)) },
+            text = {
+                Text(
+                    text = stringResource(
+                        R.string.signets_dialog_message,
+                        signet.description.ifBlank { signet.titre }
+                    )
+                )
+            },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.supprimerSignet(signet)
                     signetASupprimer = null
-                }) { Text("Supprimer", color = MaterialTheme.colorScheme.error) }
+                }) {
+                    Text(text = stringResource(R.string.signets_dialog_confirmer))
+                }
             },
             dismissButton = {
-                TextButton(onClick = { signetASupprimer = null }) { Text("Annuler") }
+                TextButton(onClick = { signetASupprimer = null }) {
+                    Text(text = stringResource(R.string.signets_dialog_annuler))
+                }
             }
         )
     }
 }
 
-/**
- * Carte affichant un signet avec URL cliquable, date, bouton modifier/supprimer
- */
 @Composable
-fun CarteSignet(signet: Signet, onModifier: () -> Unit, onSupprimer: () -> Unit) {
+private fun ListeVide(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.signets_liste_vide),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun CarteSignet(
+    signet: Signet,
+    onModifier: () -> Unit,
+    onSupprimer: () -> Unit
+) {
     val contexte = LocalContext.current
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
-        Column(Modifier.padding(12.dp)) {
-            Text(signet.titre, style = MaterialTheme.typography.titleMedium)
-
-            // URL cliquable
-            val urlTexte = buildAnnotatedString {
-                withStyle(
-                    SpanStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        textDecoration = TextDecoration.Underline
-                    )
-                ) { append(signet.url) }
-            }
+        Column(modifier = Modifier.padding(20.dp)) {
             Text(
-                text = urlTexte,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.clickable {
-                    ouvrirUrlDansNavigateur(contexte, signet.url)
-                }
+                text = signet.titre,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            UrlCliquable(url = signet.url, context = contexte)
 
             if (signet.description.isNotBlank()) {
-                Spacer(Modifier.height(4.dp))
-                Text(signet.description, style = MaterialTheme.typography.bodySmall)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = signet.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
 
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.date_ajout, formatDateCourt(signet.dateAjout)),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = onModifier) { Text("Modifier") }
-                Button(
-                    onClick = onSupprimer,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
-                ) {
-                    Text(
-                        stringResource(R.string.btn_supprimer),
-                        color = MaterialTheme.colorScheme.onErrorContainer
-                    )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.date_ajout,
+                        formatDateCourt(signet.dateAjout)
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    IconButton(onClick = onModifier) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = stringResource(R.string.signets_modifier_cd)
+                        )
+                    }
+                    IconButton(onClick = onSupprimer) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = stringResource(R.string.signets_supprimer_cd),
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+@Composable
+private fun UrlCliquable(url: String, context: Context) {
+    val texte = buildAnnotatedString {
+        val annotationTag = "URL"
+        pushStringAnnotation(tag = annotationTag, annotation = url)
+        withStyle(
+            SpanStyle(
+                color = MaterialTheme.colorScheme.primary,
+                textDecoration = TextDecoration.Underline
+            )
+        ) {
+            append(url)
+        }
+        pop()
+    }
+
+    ClickableText(
+        text = texte,
+        style = MaterialTheme.typography.bodyMedium,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = { offset ->
+            texte.getStringAnnotations(tag = "URL", start = offset, end = offset)
+                .firstOrNull()
+                ?.let { ouvrirUrlDansNavigateur(context, it.item) }
+        }
+    )
+}
+
 private fun ouvrirUrlDansNavigateur(context: Context, url: String) {
     runCatching {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }.onFailure { throwable ->
+        if (throwable !is ActivityNotFoundException) {
+            throw throwable
+        }
     }
 }
 

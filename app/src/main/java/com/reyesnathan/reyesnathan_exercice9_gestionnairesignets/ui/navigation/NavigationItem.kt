@@ -5,6 +5,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.annotation.StringRes
+import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.R
 
 /**
  * Représente chaque destination de la barre de navigation.
@@ -12,10 +14,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 sealed class NavigationItem(
     val route: String,
-    val label: String,
+    @StringRes val labelRes: Int,
     val icon: ImageVector
 ) {
-    object Accueil : NavigationItem("accueil", "Accueil", Icons.Filled.Home)
-    object Signets : NavigationItem("signets", "Signets", Icons.Filled.Bookmarks)
-    object Ajouter : NavigationItem("ajouter", "Ajouter", Icons.Filled.Add)
+    object Accueil : NavigationItem("accueil", R.string.nav_accueil, Icons.Filled.Home)
+    object Signets : NavigationItem("signets", R.string.nav_signets, Icons.Filled.Bookmarks)
+    object Ajouter : NavigationItem("ajouter", R.string.nav_ajouter, Icons.Filled.Add)
 }

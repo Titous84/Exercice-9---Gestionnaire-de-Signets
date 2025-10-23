@@ -21,9 +21,19 @@ class SignetRepository(private val signetDao: SignetDao) {
     /** Récupère la liste complète des signets sous forme de flux observable */
     val tousLesSignets: Flow<List<Signet>> = signetDao.obtenirTousLesSignets()
 
-    /** Ajoute ou remplace un signet existant */
-    suspend fun ajouterSignet(signet: Signet) {
-        signetDao.insererSignet(signet)
+    /** Récupère un signet précis */
+    fun obtenirSignet(id: Int): Flow<Signet?> = signetDao.obtenirSignetParId(id)
+
+    /** Ajoute un nouveau signet */
+    suspend fun insererSignet(titre: String, url: String, description: String) {
+        signetDao.insererSignet(
+            Signet(titre = titre, url = url, description = description)
+        )
+    }
+
+    /** Met à jour un signet existant */
+    suspend fun mettreAJourSignet(signet: Signet) {
+        signetDao.mettreAJourSignet(signet)
     }
 
     /** Supprime un signet précis */
@@ -34,13 +44,6 @@ class SignetRepository(private val signetDao: SignetDao) {
     /** Supprime tous les signets */
     suspend fun supprimerTous() {
         signetDao.supprimerTousLesSignets()
-    }
-
-    /* Inspiré de : Fiche 66.3 – Enregistrement */
-    suspend fun insererSignet(titre: String, url: String, description: String) {
-        signetDao.insererSignet(
-            Signet(titre = titre, url = url, description = description)
-        )
     }
 }
 

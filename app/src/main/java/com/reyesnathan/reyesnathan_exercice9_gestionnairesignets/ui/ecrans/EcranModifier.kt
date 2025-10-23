@@ -1,27 +1,29 @@
-/* 
- Inspiré de : Fiche 66.2 – Validation ; Fiche 66.3 – Enregistrement ;
-              Fiche 68.1 – Retrouver les données de l’enregistrement à modifier.
-*/
 package com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.ui.ecrans
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.R
+import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.ui.SignetEvenement
 import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.ui.SignetViewModel
-import kotlinx.coroutines.delay
+import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.ui.components.PageTitle
+import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.ui.components.SignetForm
+import kotlinx.coroutines.flow.collectLatest
 
 /**
- * Écran de modification d’un signet existant.
- *
- * - Préremplit les champs à partir du ViewModel.
- * - Valide les données avant enregistrement.
- * - Affiche un message de confirmation puis retourne à la liste.
+ * Écran permettant de modifier un signet existant.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,98 +32,50 @@ fun EcranModifier(
     viewModel: SignetViewModel,
     navController: NavController
 ) {
-    // 🔎 Récupération du signet à modifier
-    val signet = viewModel.listeSignets.collectAsState().value.find { it.id == signetId }
+    val signet by viewModel.obtenirSignet(signetId).collectAsState(initial = null)
 
-    var titre by remember { mutableStateOf(signet?.titre ?: "") }
-    var url by remember { mutableStateOf(signet?.url ?: "") }
-    var description by remember { mutableStateOf(signet?.description ?: "") }
-
-    // États d’erreur
-    var erreurTitre by remember { mutableStateOf(false) }
-    var erreurUrl by remember { mutableStateOf(false) }
-
-    // Confirmation de modification
-    var confirmationVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        viewModel.evenements.collectLatest { evenement ->
+            if (evenement is SignetEvenement.MiseAJourReussie) {
+                navController.popBackStack()
+            }
+        }
+    }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Modifier le signet") }) }
+        topBar = {
+            TopAppBar(
+                title = {
+                    PageTitle(
+                        title = stringResource(R.string.modifier_page_title),
+                        subtitle = stringResource(R.string.modifier_page_subtitle)
+                    )
+                }
+            )
+        }
     ) { innerPadding ->
-        Column(
+        val signetCourant = signet
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            contentAlignment = Alignment.Center
         ) {
-            // --- Champ : Titre
-            OutlinedTextField(
-                value = titre,
-                onValueChange = { titre = it; erreurTitre = false },
-                label = { Text("Titre") },
-                isError = erreurTitre,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-
-            // --- Champ : URL
-            OutlinedTextField(
-                value = url,
-                onValueChange = { url = it; erreurUrl = false },
-                label = { Text("URL") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                isError = erreurUrl,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-
-            // --- Champ : Description
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description (optionnelle)") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(16.dp))
-
-            // --- Bouton Enregistrer
-            Button(
-                onClick = {
-                    erreurTitre = titre.isBlank()
-                    erreurUrl = url.isBlank()
-
-                    if (!erreurTitre && !erreurUrl) {
-                        viewModel.ajouterSignet(titre, url, description)
-                        confirmationVisible = true
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Enregistrer les modifications")
-            }
-
-            // --- Message d’erreur
-            if (erreurTitre || erreurUrl) {
-                Text(
-                    text = "Veuillez remplir les champs obligatoires (titre et URL).",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-
-            // --- Message de confirmation + retour automatique
-            if (confirmationVisible) {
-                Text(
-                    text = "✅ Modifications enregistrées avec succès !",
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 12.dp)
-                )
-
-                LaunchedEffect(Unit) {
-                    delay(1500)
-                    confirmationVisible = false
-                    navController.navigate("liste")
+            if (signetCourant == null) {
+                Text(text = stringResource(R.string.modifier_introuvable))
+            } else {
+                SignetForm(
+                    initialTitre = signetCourant.titre,
+                    initialUrl = signetCourant.url,
+                    initialDescription = signetCourant.description,
+                    submitLabel = stringResource(R.string.modifier_signet_bouton)
+                ) { titre, url, description ->
+                    viewModel.mettreAJourSignet(
+                        signet = signetCourant,
+                        titre = titre,
+                        url = url,
+                        description = description
+                    )
                 }
             }
         }

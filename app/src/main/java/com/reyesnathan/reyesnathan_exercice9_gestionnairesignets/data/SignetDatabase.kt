@@ -82,8 +82,8 @@ abstract class SignetDatabase : RoomDatabase() {
  * abstract fun signetDao() : permet d’accéder à ton DAO.
  *
  * Room.databaseBuilder() : construit la BD dans l’espace interne de l’app.
- *
- * fallbackToDestructiveMigration() : en cas de changement de version de schéma, supprime et recrée la BD (utile en développement).
+ * addCallback() : ajoute des données initiales la première fois que la BD est créée.
+ * addMigrations() : applique les migrations pour conserver les données existantes.
  *
  * Le pattern Singleton empêche la création de plusieurs instances de la BD (bonne pratique Room).
  */

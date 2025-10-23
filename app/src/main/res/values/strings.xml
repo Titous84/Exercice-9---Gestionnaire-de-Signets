@@ -2,13 +2,46 @@
     <string name="app_name">Gestionnaire de signets</string>
     <string name="app_title">Gestionnaire de signets</string>
 
+    <!-- Navigation -->
+    <string name="nav_accueil">Accueil</string>
+    <string name="nav_signets">Signets</string>
+    <string name="nav_ajouter">Ajouter</string>
+
+    <!-- Accueil -->
+    <string name="accueil_page_title">Accueil</string>
+    <string name="accueil_page_subtitle">Vos favoris toujours à portée de main</string>
+    <string name="accueil_icone_description">Icône de signets</string>
+    <string name="accueil_message_bienvenue">Bienvenue dans votre gestionnaire de signets !</string>
+    <string name="accueil_message_invitation">Utilisez la barre du bas pour parcourir vos liens ou en ajouter de nouveaux.</string>
+
+    <!-- Formulaire -->
     <string name="label_titre">Titre</string>
     <string name="label_url">URL</string>
     <string name="label_description">Description (optionnelle)</string>
+    <string name="erreur_titre_obligatoire">Le titre est obligatoire.</string>
+    <string name="erreur_url_obligatoire">L'URL est obligatoire.</string>
+    <string name="erreur_url_invalide">Veuillez saisir une URL valide (ex. https://example.com).</string>
 
-    <string name="ajouter_signet">Ajouter le signet</string>
-    <string name="titre_liste">Mes signets enregistrés :</string>
-    <string name="btn_supprimer">Supprimer</string>
-
+    <!-- Liste -->
+    <string name="signets_page_title">Mes signets</string>
+    <string name="signets_page_subtitle">Retrouvez rapidement vos liens enregistrés</string>
+    <string name="signets_liste_vide">Aucun signet enregistré pour le moment. Ajoutez votre premier favori !</string>
+    <string name="signets_dialog_titre">Supprimer le signet ?</string>
+    <string name="signets_dialog_message">Désirez-vous vraiment supprimer le signet %1$s ?</string>
+    <string name="signets_dialog_confirmer">Oui</string>
+    <string name="signets_dialog_annuler">Non</string>
+    <string name="signets_modifier_cd">Modifier le signet</string>
+    <string name="signets_supprimer_cd">Supprimer le signet</string>
     <string name="date_ajout">Ajouté le %1$s</string>
+
+    <!-- Ajout -->
+    <string name="ajouter_page_title">Ajouter un signet</string>
+    <string name="ajouter_page_subtitle">Enregistrez un nouveau favori</string>
+    <string name="ajouter_signet_bouton">Ajouter le signet</string>
+
+    <!-- Modification -->
+    <string name="modifier_page_title">Modifier un signet</string>
+    <string name="modifier_page_subtitle">Mettez à jour les informations du lien</string>
+    <string name="modifier_signet_bouton">Enregistrer les modifications</string>
+    <string name="modifier_introuvable">Impossible de trouver ce signet.</string>
 </resources>

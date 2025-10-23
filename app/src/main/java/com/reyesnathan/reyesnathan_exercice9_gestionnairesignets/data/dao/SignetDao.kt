@@ -22,6 +22,12 @@ interface SignetDao {
     fun obtenirTousLesSignets(): Flow<List<Signet>>
 
     /**
+     * Récupère un signet précis à partir de son identifiant.
+     */
+    @Query("SELECT * FROM signets WHERE id = :id LIMIT 1")
+    fun obtenirSignetParId(id: Int): Flow<Signet?>
+
+    /**
      * Insère un nouveau signet dans la base de données.
      * Si un signet existe déjà avec le même ID, il est remplacé.
      */
@@ -31,14 +37,20 @@ interface SignetDao {
     /**
      * Supprime un signet spécifique.
      */
-    @Delete
-    suspend fun supprimerSignet(signet: Signet)
+    @Update
+    suspend fun mettreAJourSignet(signet: Signet)
 
     /**
      * Supprime tous les signets.
      */
     @Query("DELETE FROM signets")
     suspend fun supprimerTousLesSignets()
+
+    /**
+     * Supprime un signet spécifique.
+     */
+    @Delete
+    suspend fun supprimerSignet(signet: Signet)
 }
 
 /**

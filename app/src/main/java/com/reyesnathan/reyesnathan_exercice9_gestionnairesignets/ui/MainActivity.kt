@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val base = SignetDatabase.Companion.obtenirInstance(applicationContext)
+        val base = SignetDatabase.obtenirInstance(applicationContext)
         val repository = SignetRepository(base.signetDao())
         val usine = SignetViewModelFactory(repository)
 
@@ -35,10 +36,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val viewModel: SignetViewModel = viewModel(factory = usine)
 
-                Scaffold(
-                    bottomBar = { BarreNavigation(navController) }
-                ) { innerPadding ->
-                    Surface(modifier = Modifier.Companion.padding(innerPadding)) {
+                Scaffold(bottomBar = { BarreNavigation(navController) }) { innerPadding ->
+                    Surface(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
                         NavGraph(navController = navController, viewModel = viewModel)
                     }
                 }
