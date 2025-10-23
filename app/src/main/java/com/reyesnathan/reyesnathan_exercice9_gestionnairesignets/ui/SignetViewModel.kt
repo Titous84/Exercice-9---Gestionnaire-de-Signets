@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.data.entities.Signet
 import com.reyesnathan.reyesnathan_exercice9_gestionnairesignets.data.repository.SignetRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import androidx.lifecycle.ViewModelProvider
-
-
 /**
  * ViewModel servant d’intermédiaire entre le dépôt et l’interface utilisateur.
  *
@@ -24,6 +24,9 @@ class SignetViewModel(private val repository: SignetRepository) : ViewModel() {
     private val _listeSignets = MutableStateFlow<List<Signet>>(emptyList())
     val listeSignets: StateFlow<List<Signet>> = _listeSignets
 
+    private val _evenements = MutableSharedFlow<SignetEvenement>(extraBufferCapacity = 1)
+    val evenements: SharedFlow<SignetEvenement> = _evenements.asSharedFlow()
+
     init {
         // Récupère en continu la liste depuis le repository (Flow)
         viewModelScope.launch {
@@ -36,7 +39,18 @@ class SignetViewModel(private val repository: SignetRepository) : ViewModel() {
     /* Inspiré de : Fiche 66.3 – Enregistrement */
     fun ajouterSignet(titre: String, url: String, description: String) {
         viewModelScope.launch {
-            repository.insererSignet(titre, url, description)
+            repository.insererSignet(titre = titre, url = url, description = description)
+            _evenements.emit(SignetEvenement.AjoutReussi)
+        }
+    }
+
+    /** Met à jour un signet existant */
+    fun mettreAJourSignet(signet: Signet, titre: String, url: String, description: String) {
+        viewModelScope.launch {
+            repository.mettreAJourSignet(
+                signet.copy(titre = titre, url = url, description = description)
+            )
+            _evenements.emit(SignetEvenement.MiseAJourReussie)
         }
     }
 
@@ -53,6 +67,14 @@ class SignetViewModel(private val repository: SignetRepository) : ViewModel() {
             repository.supprimerTous()
         }
     }
+
+    /** Retourne le signet demandé sous forme de flux */
+    fun obtenirSignet(id: Int) = repository.obtenirSignet(id)
+}
+
+sealed interface SignetEvenement {
+    data object AjoutReussi : SignetEvenement
+    data object MiseAJourReussie : SignetEvenement
 }
 
 /**

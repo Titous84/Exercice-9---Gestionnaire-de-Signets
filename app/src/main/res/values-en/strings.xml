@@ -2,13 +2,46 @@
     <string name="app_name">Bookmarks Manager</string>
     <string name="app_title">Bookmarks Manager</string>
 
+    <!-- Navigation -->
+    <string name="nav_accueil">Home</string>
+    <string name="nav_signets">Bookmarks</string>
+    <string name="nav_ajouter">Add</string>
+
+    <!-- Home -->
+    <string name="accueil_page_title">Home</string>
+    <string name="accueil_page_subtitle">Your favourite links at a glance</string>
+    <string name="accueil_icone_description">Bookmarks icon</string>
+    <string name="accueil_message_bienvenue">Welcome to your bookmarks manager!</string>
+    <string name="accueil_message_invitation">Use the bottom bar to browse your links or add new ones.</string>
+
+    <!-- Form -->
     <string name="label_titre">Title</string>
     <string name="label_url">URL</string>
     <string name="label_description">Description (optional)</string>
+    <string name="erreur_titre_obligatoire">The title is required.</string>
+    <string name="erreur_url_obligatoire">The URL is required.</string>
+    <string name="erreur_url_invalide">Please enter a valid URL (e.g. https://example.com).</string>
 
-    <string name="ajouter_signet">Add bookmark</string>
-    <string name="titre_liste">My saved bookmarks:</string>
-    <string name="btn_supprimer">Delete</string>
-
+    <!-- List -->
+    <string name="signets_page_title">My bookmarks</string>
+    <string name="signets_page_subtitle">Quick access to your saved links</string>
+    <string name="signets_liste_vide">No bookmarks yet. Add your first favourite!</string>
+    <string name="signets_dialog_titre">Delete bookmark?</string>
+    <string name="signets_dialog_message">Do you really want to delete the bookmark %1$s?</string>
+    <string name="signets_dialog_confirmer">Yes</string>
+    <string name="signets_dialog_annuler">No</string>
+    <string name="signets_modifier_cd">Edit bookmark</string>
+    <string name="signets_supprimer_cd">Delete bookmark</string>
     <string name="date_ajout">Added on %1$s</string>
+
+    <!-- Add -->
+    <string name="ajouter_page_title">Add a bookmark</string>
+    <string name="ajouter_page_subtitle">Save a new favourite</string>
+    <string name="ajouter_signet_bouton">Save bookmark</string>
+
+    <!-- Edit -->
+    <string name="modifier_page_title">Edit a bookmark</string>
+    <string name="modifier_page_subtitle">Update the link information</string>
+    <string name="modifier_signet_bouton">Save changes</string>
+    <string name="modifier_introuvable">Unable to find this bookmark.</string>
 </resources>
